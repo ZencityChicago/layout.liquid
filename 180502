@@ -1,0 +1,176 @@
+{% if current_page.controller == 'catch_all' or context.error? %}
+  {% capture page_title %}{{ site.not_found_page_title }} — {{ site.name }}{% endcapture %}
+  {% assign page_description = site.not_found_page_description %}
+{% elsif current_page.controller == 'rentals' %}
+  {% if rental.page_title %}
+    {% assign page_title = rental.page_title %}
+  {% else %}
+    {% capture page_title %}{{ rental.headline }} {% t 'rentals.show.in' %} {{ rental.destination.name }} — {{ site.name }}{% endcapture %}
+  {% endif %}
+  {% if rental.page_description %}
+    {% assign page_description = rental.page_description %}
+  {% else %}
+    {% assign page_description = rental.summary %}
+  {% endif %}
+  
+{% elsif current_page.controller == 'pages' %}
+  {% if page.page_title %}
+    {% assign page_title = page.page_title %}
+  {% else %}
+    {% capture page_title %}{{ page.title }} — {{ site.name }}{% endcapture %}
+  {% endif %}
+  {% assign page_description = page.page_description %}
+  
+  
+{% elsif current_page.controller == 'categories' %}
+  {% if category.page_title %}
+    {% assign page_title = category.page_title %}
+  {% else %}
+    {% capture page_title %}{{ category.title }} — {{ site.name }}{% endcapture %}
+  {% endif %}
+  {% assign page_description = category.page_description %}
+{% elsif current_page.controller == 'destinations' %}
+  {% if destination.page_title %}
+    {% assign page_title = destination.page_title %}
+  {% else %}
+    {% capture page_title %}{{ destination.title }} — {{ site.name }}{% endcapture %}
+  {% endif %}
+  {% assign page_description = destination.page_description %}
+{% elsif current_page.controller == 'home' %}
+  {% if site.home_page_title %}
+    {% assign page_title = site.home_page_title %}
+  {% else %}
+    {% assign page_title = site.name %}
+  {% endif %}
+  {% assign page_description = site.home_page_description %}
+{% elsif current_page.controller == 'search' %}
+  {% if site.search_page_title %}
+    {% assign page_title = site.search_page_title %}
+  {% else %}
+    {% assign page_title = site.name %}
+  {% endif %}
+  {% assign page_description = site.search_page_description %}
+{% elsif current_page.controller == 'contact_requests' %}
+  {% if site.contact_page_title %}
+    {% assign page_title = site.contact_page_title %}
+  {% else %}
+    {% capture page_title %}{% t "contact_requests.title" %} — {{ site.name }}{% endcapture %}
+  {% endif %}
+  {% assign page_description = site.contact_page_description %}
+{% else %}
+  {% assign page_title = site.name %}
+  {% assign page_description = site.description %} 
+  
+{% endif %}
+<!DOCTYPE html>
+{% include 'layouts/_html_tags' %}
+<head>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-113461002-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-113461002-1');
+</script>
+
+<link rel="shortcut icon" href="{{ 'favicon.png' | image_url }}">
+  
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>{{ page_title }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="{{ page_description }}">
+  {% include 'layouts/_opengraph' %}
+  <link href="//fonts.googleapis.com/css?family=Open+Sans:400,700" rel="stylesheet" type="text/css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+   
+   <link href="https://a0.muscache.com/airbnb/static/packages/common_o2.1-c90267e03941d873ee15f9abba116d7f.css" media="all" rel="stylesheet2" type="text/css" />
+<link href="https://a0.muscache.com/airbnb/static/packages/common-7dfeccd69a4881e637e07819742cdf2a.css" media="all" rel="stylesheet2" type="text/css" />
+<link href="https://a0.muscache.com/airbnb/static/packages/common_o2.1-3c84791ad667e9465078426cf4b0cc50.css" media="all" rel="stylesheet2" type="text/css" />
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css"
+   integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ=="
+   crossorigin=""/>
+   
+     <!-- Make sure you put this AFTER Leaflet's CSS -->
+ <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"
+   integrity="sha512-/Nsx9X4HebavoBvEBuyp3I7od5tA0UzAxs+j83KgC8PU0kgB4XiK4Lfe4y4cgBtaRJQEIFCW+oC506aPT2L1zw=="
+   crossorigin=""></script>
+   
+   <script src='https://api.mapbox.com/mapbox-gl-js/v0.44.2/mapbox-gl.js'></script>
+<link href='https://api.mapbox.com/mapbox-gl-js/v0.44.2/mapbox-gl.css' rel='stylesheet' />
+
+  {{ 'application.css' | stylesheet_url | stylesheet_tag }}
+  
+  <!--[if lt IE 9]>
+    {{ 'ie-lt9/application.js' | javascript_url | script_tag }}
+  <![endif]-->
+  {{ content_for_header }}
+  
+</head>
+
+<body class="c-{{ current_page.controller }} a-{{ current_page.action }} flex-col" data-currency-symbol="{{ currencies.current.symbol }}"
+      data-currency-code="{{ currencies.current.iso_code }}">
+  {% include 'layouts/_menu' %}
+  <div class="flex-1">
+    {{ content_for_layout }}
+  
+  
+  {% if current_page.controller == 'contact_requests' %}
+    {% include 'snippets/contact' %}
+  {% elsif page.title == "All Neighborhoods" %}
+    {% include 'snippets/neighborhoods' %}
+  
+  {% elsif page.title == "River North" %}
+    {% include 'snippets/river_north' %}
+  {% elsif page.title == "Wicker Park" %}
+    {% include 'snippets/wicker_park' %}
+  {% elsif page.title == "West Loop" %}
+    {% include 'snippets/west_loop' %}
+  {% elsif page.title == "The Loop" %}
+    {% include 'snippets/the_loop' %}
+  {% elsif page.title == "Hyde Park" %}
+    {% include 'snippets/hyde_park' %}
+  {% elsif page.title == "Streeterville" %}
+    {% include 'snippets/streeterville' %}
+  {% elsif page.title == "Gold Coast" %}
+    {% include 'snippets/gold_coast' %}  
+  {% elsif page.title == "Partner" %}
+    {% include 'snippets/partner' %}
+  {% elsif page.title == "Places" %}
+    {% include 'snippets/places' %}
+  {% elsif page.title == "test" %}
+    {% include 'snippets/test' %}
+  {% elsif page.title == "Neighborhoods2" %}
+    {% include 'snippets/neighborhoods2' %}
+  {% endif %}
+
+
+  </div>
+  {% include 'layouts/_footer' %}
+  
+  <script>
+    //<![CDATA[
+      WEBSITE_DOMAIN = "{{ site.domain }}";
+    //]]>
+  </script>
+  <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script type="text/javascript" async
+          src="https://cdn.bookingsync.io/libs/bookingsync-calendar-widget/0.2.4/js/bookingsync-calendar-widget.min.js"
+          crossorigin="anonymous"></script>
+
+
+  {% if site.google_api_key %}
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ site.google_api_key }}"></script>
+  {% else %}
+    <script src="//maps.googleapis.com/maps/api/js?v=3.exp"></script>
+  {% endif %}
+
+  {{ 'application.js' | javascript_url | script_tag }}
+</body>
+</html>
+
+
+
